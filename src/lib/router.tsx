@@ -71,19 +71,28 @@ export function Link({
 }
 
 export function useParams(pattern: string): Record<string, string> {
-  const path = useRoute();
-  const keys: string[] = [];
-  const regexStr = pattern.replace(/:([^/]+)/g, (_, key) => {
-    keys.push(key);
-    return '([^/]+)';
-  });
-  const match = new RegExp(`^${regexStr}$`).exec(path);
-  if (!match) return {};
-  const params: Record<string, string> = {};
-  keys.forEach((key, i) => {
-    params[key] = decodeURIComponent(match[i + 1]);
-  });
-  return params;
+  const rawPath = useRoute();
+  const normalizedPath = rawPath.startsWith('/innovara/') 
+    ? rawPath.replace(/^\/innovara/, '') 
+    : (rawPath === '/innovara' ? '/' : rawPath);
+
+  const testPaths = [rawPath, normalizedPath];
+  for (const path of testPaths) {
+    const keys: string[] = [];
+    const regexStr = pattern.replace(/:([^/]+)/g, (_, key) => {
+      keys.push(key);
+      return '([^/]+)';
+    });
+    const match = new RegExp(`^${regexStr}$`).exec(path);
+    if (match) {
+      const params: Record<string, string> = {};
+      keys.forEach((key, i) => {
+        params[key] = decodeURIComponent(match[i + 1]);
+      });
+      return params;
+    }
+  }
+  return {};
 }
 
 export function useQuery(): URLSearchParams {
