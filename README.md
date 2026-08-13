@@ -60,6 +60,7 @@ src/
 ## 📌 Status
 
 - ✅ Frontend completed
+- ✅ Database management, testing & documentation completed
 - 🔄 Backend integration in progress
 
 ## 👨‍💻 Developed For
