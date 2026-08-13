@@ -23,12 +23,12 @@ import { notifications as mockNotifications } from '@/data/mock';
 import { Avatar } from '@/components/ui';
 
 const navItems = [
-  { label: 'Home', path: '/', icon: Compass },
-  { label: 'Hackathons', path: '/hackathons', icon: Target },
-  { label: 'Projects', path: '/projects', icon: FolderGit2 },
-  { label: 'Opportunities', path: '/opportunities', icon: Sparkles },
-  { label: 'Leaderboard', path: '/leaderboard', icon: Trophy },
-  { label: 'My Workspace', path: '/workspace', icon: LayoutDashboard },
+  { label: 'Overview', path: '/innovara', icon: Compass },
+  { label: 'Hackathons', path: '/innovara/hackathons', icon: Target },
+  { label: 'Projects', path: '/innovara/projects', icon: FolderGit2 },
+  { label: 'Opportunities', path: '/innovara/opportunities', icon: Sparkles },
+  { label: 'Workspace', path: '/innovara/workspace', icon: LayoutDashboard },
+  { label: 'Leaderboard', path: '/innovara/leaderboard', icon: Trophy },
 ];
 
 export function Navbar() {
@@ -54,8 +54,12 @@ export function Navbar() {
     setProfileOpen(false);
   }, [route]);
 
-  const isActive = (path: string) =>
-    path === '/' ? route === '/' : route.startsWith(path);
+  const isActive = (path: string) => {
+    const cleanPath = path.replace(/^\/innovara/, '') || '/';
+    const cleanRoute = route.replace(/^\/innovara/, '') || '/';
+    if (cleanPath === '/') return cleanRoute === '/';
+    return cleanRoute.startsWith(cleanPath);
+  };
 
   return (
     <>
@@ -168,9 +172,9 @@ export function Navbar() {
                   </div>
                   <div className="py-1">
                     {[
-                      { label: 'My Workspace', icon: LayoutDashboard, path: '/workspace' },
-                      { label: 'My Profile', icon: User, path: '/profile/s1' },
-                      { label: 'Organizer Dashboard', icon: Settings, path: '/organizer' },
+                      { label: 'Innovator Workspace', icon: LayoutDashboard, path: '/innovara/workspace' },
+                      { label: 'My Profile', icon: User, path: '/innovara/profile/s1' },
+                      { label: 'Organizer Portal', icon: Settings, path: '/innovara/organizer' },
                     ].map((item) => {
                       const Icon = item.icon;
                       return (

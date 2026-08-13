@@ -2,33 +2,35 @@ import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { ToastProvider } from '@/lib/toast';
 import { useRoute } from '@/lib/router';
-import { LandingPage } from '@/pages/LandingPage';
-import { HackathonsPage } from '@/pages/HackathonsPage';
-import { HackathonDetailPage } from '@/pages/HackathonDetailPage';
-import { ProjectsPage } from '@/pages/ProjectsPage';
-import { ProjectDetailPage } from '@/pages/ProjectDetailPage';
-import { OpportunitiesPage } from '@/pages/OpportunitiesPage';
-import { LeaderboardPage } from '@/pages/LeaderboardPage';
-import { WorkspacePage } from '@/pages/WorkspacePage';
-import { OrganizerPage } from '@/pages/OrganizerPage';
-import { ProfilePage } from '@/pages/ProfilePage';
-import { SearchPage } from '@/pages/SearchPage';
+import {
+  InnovaraOverview,
+  InnovaraHackathons,
+  InnovaraHackathonDetail,
+  InnovaraProjects,
+  InnovaraProjectDetail,
+  InnovaraOpportunities,
+  InnovaraLeaderboard,
+  InnovaraWorkspace,
+  InnovaraOrganizer,
+  InnovaraProfile,
+  InnovaraSearch,
+} from '@/pages/innovara';
 
 function Router() {
   const route = useRoute();
 
   // Route matching
-  if (route === '/') return <LandingPage />;
-  if (route === '/hackathons') return <HackathonsPage />;
-  if (route.startsWith('/hackathons/')) return <HackathonDetailPage />;
-  if (route === '/projects') return <ProjectsPage />;
-  if (route.startsWith('/projects/')) return <ProjectDetailPage />;
-  if (route === '/opportunities') return <OpportunitiesPage />;
-  if (route === '/leaderboard') return <LeaderboardPage />;
-  if (route === '/workspace') return <WorkspacePage />;
-  if (route === '/organizer') return <OrganizerPage />;
-  if (route === '/search') return <SearchPage />;
-  if (route.startsWith('/profile/')) return <ProfilePage />;
+  if (route === '/' || route === '/innovara' || route === '/innovara/') return <InnovaraOverview />;
+  if (route === '/hackathons' || route === '/innovara/hackathons') return <InnovaraHackathons />;
+  if (route.startsWith('/hackathons/') || route.startsWith('/innovara/hackathons/')) return <InnovaraHackathonDetail />;
+  if (route === '/projects' || route === '/innovara/projects') return <InnovaraProjects />;
+  if (route.startsWith('/projects/') || route.startsWith('/innovara/projects/')) return <InnovaraProjectDetail />;
+  if (route === '/opportunities' || route === '/innovara/opportunities') return <InnovaraOpportunities />;
+  if (route === '/leaderboard' || route === '/innovara/leaderboard') return <InnovaraLeaderboard />;
+  if (route === '/workspace' || route === '/innovara/workspace') return <InnovaraWorkspace />;
+  if (route === '/organizer' || route === '/innovara/organizer') return <InnovaraOrganizer />;
+  if (route === '/search' || route === '/innovara/search') return <InnovaraSearch />;
+  if (route.startsWith('/profile/') || route.startsWith('/innovara/profile/')) return <InnovaraProfile />;
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-20 text-center">

@@ -62,6 +62,7 @@ export function ProjectsPage() {
   const [search, setSearch] = useState('');
   const [filters, setFilters] = useState<Record<string, string>>({});
   const [sort, setSort] = useState('stars');
+  const [openForAdoptionOnly, setOpenForAdoptionOnly] = useState(false);
 
   const handleFilterChange = (key: string, value: string) => {
     setFilters((prev) => ({ ...prev, [key]: value === 'all' ? '' : value }));
@@ -69,6 +70,11 @@ export function ProjectsPage() {
 
   const filtered = useMemo(() => {
     let result = projects.filter((p) => {
+      if (openForAdoptionOnly) {
+        if (p.status !== 'Abandoned' && p.status !== 'Archived' && p.status !== 'Looking for Contributors') {
+          return false;
+        }
+      }
       if (search) {
         const q = search.toLowerCase();
         if (!p.name.toLowerCase().includes(q) && !p.tagline.toLowerCase().includes(q) && !p.description.toLowerCase().includes(q)) return false;
@@ -88,7 +94,7 @@ export function ProjectsPage() {
       case 'oldest': result = [...result].sort((a, b) => a.year - b.year); break;
     }
     return result;
-  }, [search, filters, sort]);
+  }, [search, filters, sort, openForAdoptionOnly]);
 
   const featured = filtered.filter((p) => p.featured);
   const regular = filtered.filter((p) => !p.featured);
@@ -96,14 +102,27 @@ export function ProjectsPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
       {/* Header */}
-      <div className="mb-8">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent-500/10 border border-accent-500/20 text-xs font-medium text-accent-500 mb-4">
-          <FolderGit2 className="w-3.5 h-3.5" /> Innovation Repository
+      <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent-500/10 border border-accent-500/20 text-xs font-medium text-accent-500 mb-4">
+            <FolderGit2 className="w-3.5 h-3.5" /> Innovation Repository
+          </div>
+          <h1 className="font-display text-3xl sm:text-4xl font-bold mb-2">Innovation Repository</h1>
+          <p className="text-soft max-w-2xl">
+            Explore what students built before you. Continue it. Improve it. Make it yours.
+          </p>
         </div>
-        <h1 className="font-display text-3xl sm:text-4xl font-bold mb-2">Innovation Repository</h1>
-        <p className="text-soft max-w-2xl">
-          Explore what students built before you. Continue it. Improve it. Make it yours.
-        </p>
+        <button
+          onClick={() => setOpenForAdoptionOnly((prev) => !prev)}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all border ${
+            openForAdoptionOnly
+              ? 'bg-success-500 text-white border-success-500 shadow-soft'
+              : 'bg-elev border-base text-soft hover:text-base hover:border-strong'
+          }`}
+        >
+          <Sparkles className="w-4 h-4" />
+          {openForAdoptionOnly ? 'Showing Open for Adoption' : 'Filter: Open for Adoption'}
+        </button>
       </div>
 
       {/* Search + filters */}
