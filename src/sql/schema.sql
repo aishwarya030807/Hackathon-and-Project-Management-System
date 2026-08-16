@@ -20,3 +20,7 @@ CREATE TABLE IF NOT EXISTS bookmarks (
   id BIGSERIAL PRIMARY KEY, user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE, hackathon_id BIGINT NOT NULL REFERENCES hackathons(id) ON DELETE CASCADE, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), UNIQUE(user_id,hackathon_id)
 );
 CREATE INDEX IF NOT EXISTS idx_projects_domain ON projects(domain); CREATE INDEX IF NOT EXISTS idx_projects_tech_stack ON projects USING GIN(tech_stack); CREATE INDEX IF NOT EXISTS idx_hackathons_deadline ON hackathons(deadline); CREATE INDEX IF NOT EXISTS idx_hackathons_domain ON hackathons(domain);
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS current_maintainer_id BIGINT REFERENCES users(id);
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS maturity VARCHAR(20) NOT NULL DEFAULT 'prototype' CHECK (maturity IN ('concept','prototype','mvp','beta','production'));
+ALTER TABLE projects DROP CONSTRAINT IF EXISTS projects_status_check;
+ALTER TABLE projects ADD CONSTRAINT projects_status_check CHECK (status IN ('active','abandoned','completed','archived','revived'));
