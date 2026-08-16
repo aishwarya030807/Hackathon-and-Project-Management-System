@@ -1,27 +1,26 @@
 {
-  "name": "vite-react-typescript-starter",
+  "name": "innovation-hub-backend",
+  "version": "1.0.0",
   "private": true,
-  "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "dev": "nodemon server.js",
+    "start": "node server.js",
+    "db:init": "node src/scripts/initDb.js"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.111.0",
-    "lucide-react": "^1.28.0",
-    "react": "^19.2.8",
-    "react-dom": "^19.2.8"
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-validator": "^7.2.1",
+    "helmet": "^8.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
+    "multer": "^2.0.2",
+    "pg": "^8.13.1",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
   },
-  "devDependencies": {
-    "@tailwindcss/vite": "^4.3.3",
-    "@types/node": "^22.20.1",
-    "@types/react": "~19.2.18",
-    "@types/react-dom": "~19.2.4",
-    "@vitejs/plugin-react": "^6.0.5",
-    "tailwindcss": "^4.3.3",
-    "typescript": "^6.0.3",
-    "vite": "^8.2.0"
-  }
+  "devDependencies": { "nodemon": "^3.1.7" }
 }

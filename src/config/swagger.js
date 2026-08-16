@@ -1,0 +1,2 @@
+import swaggerJSDoc from 'swagger-jsdoc';
+export default swaggerJSDoc({ definition: { openapi: '3.0.3', info: { title: 'Innovation Hub API', version: '1.0.0', description: 'Hackathon discovery and project lifecycle API' }, servers: [{ url: '/api' }], components: { securitySchemes: { bearerAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' } }, schemas: { Error: { type: 'object', properties: { message: { type: 'string' } } } } } }, apis: ['./src/routes/*.js'] });

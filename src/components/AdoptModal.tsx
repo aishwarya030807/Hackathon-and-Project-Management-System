@@ -3,8 +3,9 @@ import { Button } from '@/components/ui/Button';
 import { Avatar } from '@/components/ui';
 import { StatusBadge } from '@/components/ui/Badge';
 import { useToast } from '@/lib/toast';
+import { supabase } from '@/lib/supabase';
 import type { Project } from '@/types';
-import { Users, Clock, Lightbulb, CheckCircle2 } from 'lucide-react';
+import { Users, Clock, Lightbulb, CheckCircle2, Send } from 'lucide-react';
 import { useState } from 'react';
 
 export function AdoptModal({

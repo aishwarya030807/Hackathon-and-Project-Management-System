@@ -1,0 +1,4 @@
+import { query } from '../config/database.js'; import AppError from '../utils/AppError.js';
+export async function create(userId, hackathonId) { const {rows}=await query('INSERT INTO bookmarks (user_id,hackathon_id) VALUES ($1,$2) ON CONFLICT (user_id,hackathon_id) DO NOTHING RETURNING *',[userId,hackathonId]); if(!rows[0]) throw new AppError('Hackathon already bookmarked',409); return rows[0]; }
+export async function list(userId) { const {rows}=await query('SELECT b.id AS bookmark_id,b.created_at AS bookmarked_at,h.* FROM bookmarks b JOIN hackathons h ON h.id=b.hackathon_id WHERE b.user_id=$1 ORDER BY b.created_at DESC',[userId]); return rows; }
+export async function remove(id,userId) { const result=await query('DELETE FROM bookmarks WHERE id=$1 AND user_id=$2',[id,userId]);if(!result.rowCount)throw new AppError('Bookmark not found',404); }

@@ -1,0 +1,2 @@
+import { Router } from 'express'; import { body } from 'express-validator'; import * as c from '../controllers/bookmarkController.js'; import { protect } from '../middleware/authMiddleware.js'; import { validate } from '../middleware/validationMiddleware.js'; import { idParam } from '../validators/common.js';
+const r=Router();r.use(protect);r.get('/',c.list);r.post('/',body('hackathonId').isInt({min:1}).toInt(),validate,c.create);r.delete('/:id',idParam,validate,c.remove);export default r;

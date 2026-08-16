@@ -1,0 +1,1 @@
+import { Router } from 'express'; import { protect } from '../middleware/authMiddleware.js'; import { upload } from '../middleware/uploadMiddleware.js'; import { uploadFile } from '../controllers/uploadController.js'; const r=Router();r.post('/',protect,upload.single('file'),uploadFile);export default r;

@@ -1,0 +1,2 @@
+import * as service from '../services/bookmarkService.js'; import asyncHandler from '../utils/asyncHandler.js';
+export const create=asyncHandler(async(req,res)=>res.status(201).json({bookmark:await service.create(req.user.id,req.body.hackathonId)})); export const list=asyncHandler(async(req,res)=>res.json({bookmarks:await service.list(req.user.id)})); export const remove=asyncHandler(async(req,res)=>{await service.remove(req.params.id,req.user.id);res.status(204).send();});
