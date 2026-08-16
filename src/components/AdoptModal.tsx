@@ -3,8 +3,9 @@ import { Button } from '@/components/ui/Button';
 import { Avatar } from '@/components/ui';
 import { StatusBadge } from '@/components/ui/Badge';
 import { useToast } from '@/lib/toast';
+import { supabase } from '@/lib/supabase';
 import type { Project } from '@/types';
-import { Users, Clock, Lightbulb, CheckCircle2 } from 'lucide-react';
+import { Users, Clock, Lightbulb, CheckCircle2, Send } from 'lucide-react';
 import { useState } from 'react';
 
 export function AdoptModal({
@@ -18,16 +19,47 @@ export function AdoptModal({
 }) {
   const { toast } = useToast();
   const [adopted, setAdopted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
 
   if (!project) return null;
 
-  const handleAdopt = () => {
+  const handleAdopt = async () => {
+    setLoading(true);
+
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      toast('Please log in to adopt a project.', 'error');
+      setLoading(false);
+      return;
+    }
+
+    const { error } = await supabase.from('project_adoptions').insert({
+      user_id: user.id,
+      project_id: project.id,
+      message: message || 'I would like to continue developing this project.',
+    });
+
+    setLoading(false);
+
+    if (error) {
+      if (error.code === '23505') {
+        toast('You already have a pending request for this project.', 'error');
+      } else {
+        toast('Something went wrong sending your request.', 'error');
+        console.error(error);
+      }
+      return;
+    }
+
     setAdopted(true);
-    toast(`You are now a maintainer of ${project.name}!`, 'success');
+    toast(`Request sent! The maintainers of ${project.name} will review it.`, 'success');
     setTimeout(() => {
       onClose();
       setAdopted(false);
-    }, 1500);
+      setMessage('');
+    }, 1800);
   };
 
   return (
@@ -37,9 +69,9 @@ export function AdoptModal({
           <div className="w-16 h-16 rounded-full bg-success-500/10 flex items-center justify-center mb-4 animate-scale-in">
             <CheckCircle2 className="w-8 h-8 text-success-500" />
           </div>
-          <h3 className="text-lg font-semibold mb-1">You're now a maintainer!</h3>
+          <h3 className="text-lg font-semibold mb-1">Request sent!</h3>
           <p className="text-sm text-soft">
-            {project.name} is now in your workspace. Continue building where the original team left off.
+            The current maintainers of {project.name} will review your request.
           </p>
         </div>
       ) : (
@@ -56,11 +88,21 @@ export function AdoptModal({
           </div>
 
           <p className="text-sm text-soft mb-5">
-            This project was archived after the original hackathon. You can become a new maintainer and
-            continue its development.
+            This project was archived after the original hackathon. Send a request to become a new
+            maintainer and continue its development.
           </p>
 
-          {/* Original creators */}
+          <div className="mb-4">
+            <label className="text-xs font-medium text-soft mb-2 block">Message (optional)</label>
+            <textarea
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder="What do you want to build on this project?"
+              rows={3}
+              className="w-full text-sm rounded-xl bg-soft border border-base p-3 focus:outline-none focus:border-strong resize-none"
+            />
+          </div>
+
           <div className="mb-4">
             <p className="text-xs font-medium text-soft mb-2 flex items-center gap-1.5">
               <Users className="w-3.5 h-3.5" /> Original Creators
@@ -76,13 +118,11 @@ export function AdoptModal({
             </div>
           </div>
 
-          {/* Last updated */}
           <div className="mb-4 flex items-center gap-2 text-sm text-soft">
             <Clock className="w-4 h-4 text-faint" />
             Last updated: {project.year}
           </div>
 
-          {/* Suggested improvements */}
           {project.suggestedImprovements && project.suggestedImprovements.length > 0 && (
             <div className="mb-5">
               <p className="text-xs font-medium text-soft mb-2 flex items-center gap-1.5">
@@ -100,10 +140,10 @@ export function AdoptModal({
           )}
 
           <div className="flex gap-3">
-            <Button variant="primary" onClick={handleAdopt} className="flex-1">
-              Become a Maintainer
+            <Button variant="primary" onClick={handleAdopt} className="flex-1" disabled={loading}>
+              <Send className="w-4 h-4" /> {loading ? 'Sending...' : 'Send Adoption Request'}
             </Button>
-            <Button variant="secondary" onClick={onClose}>
+            <Button variant="secondary" onClick={onClose} disabled={loading}>
               Cancel
             </Button>
           </div>
