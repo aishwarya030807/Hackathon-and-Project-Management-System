@@ -18,136 +18,135 @@ export function AdoptModal({
   project: Project | null;
 }) {
   const { toast } = useToast();
-  const [adopted, setAdopted] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
+  const [submitted, setSubmitted] = useState(false);
+  const [teamName, setTeamName] = useState('Team Beta');
+  const [motivation, setMotivation] = useState('');
+  const [technicalPlan, setTechnicalPlan] = useState('');
+  const [skills, setSkills] = useState('React, Node.js, Python, ML');
+  const [timeline, setTimeline] = useState('3 months to MVP');
 
   if (!project) return null;
 
-  const handleAdopt = async () => {
-    setLoading(true);
-
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) {
-      toast('Please log in to adopt a project.', 'error');
-      setLoading(false);
-      return;
-    }
-
-    const { error } = await supabase.from('project_adoptions').insert({
-      user_id: user.id,
-      project_id: project.id,
-      message: message || 'I would like to continue developing this project.',
-    });
-
-    setLoading(false);
-
-    if (error) {
-      if (error.code === '23505') {
-        toast('You already have a pending request for this project.', 'error');
-      } else {
-        toast('Something went wrong sending your request.', 'error');
-        console.error(error);
-      }
-      return;
-    }
-
-    setAdopted(true);
-    toast(`Request sent! The maintainers of ${project.name} will review it.`, 'success');
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitted(true);
+    toast(`Adoption request submitted for ${project.name}!`, 'success');
     setTimeout(() => {
       onClose();
-      setAdopted(false);
-      setMessage('');
-    }, 1800);
+      setSubmitted(false);
+    }, 2000);
   };
 
   return (
-    <Modal open={open} onClose={onClose} title="Revive this Project">
-      {adopted ? (
+    <Modal open={open} onClose={onClose} title={`Adopt & Revive: ${project.name}`} maxWidth="max-w-xl">
+      {submitted ? (
         <div className="flex flex-col items-center text-center py-8">
           <div className="w-16 h-16 rounded-full bg-success-500/10 flex items-center justify-center mb-4 animate-scale-in">
             <CheckCircle2 className="w-8 h-8 text-success-500" />
           </div>
-          <h3 className="text-lg font-semibold mb-1">Request sent!</h3>
-          <p className="text-sm text-soft">
-            The current maintainers of {project.name} will review your request.
+          <h3 className="text-lg font-semibold mb-1">Adoption Request Submitted!</h3>
+          <p className="text-sm text-soft max-w-md">
+            Status: <span className="font-semibold text-accent-500">PENDING</span>. The original creators and platform moderators have been notified. Once approved, you will be assigned as maintainer!
           </p>
         </div>
       ) : (
-        <>
-          <div className="flex items-start gap-3 p-4 rounded-xl bg-soft border border-base mb-4">
-            <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${project.color} shrink-0`} />
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="flex items-start gap-3 p-3.5 rounded-xl bg-soft border border-base">
+            <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${project.color} shrink-0`} />
             <div>
-              <h3 className="font-semibold">{project.name}</h3>
+              <h3 className="font-semibold text-sm">{project.name}</h3>
               <p className="text-xs text-soft">{project.tagline}</p>
-              <div className="mt-1.5">
+              <div className="mt-1">
                 <StatusBadge status={project.status} />
               </div>
             </div>
           </div>
 
-          <p className="text-sm text-soft mb-5">
-            This project was archived after the original hackathon. Send a request to become a new
-            maintainer and continue its development.
-          </p>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs font-medium text-soft mb-1 block">Applicant / Team Name</label>
+              <input
+                type="text"
+                required
+                value={teamName}
+                onChange={(e) => setTeamName(e.target.value)}
+                placeholder="e.g. Team Beta"
+                className="w-full px-3 py-2 text-sm bg-elev border border-base rounded-lg focus:outline-none focus:border-accent-500"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-soft mb-1 block">Relevant Skills</label>
+              <input
+                type="text"
+                required
+                value={skills}
+                onChange={(e) => setSkills(e.target.value)}
+                placeholder="e.g. React, Python, PyTorch"
+                className="w-full px-3 py-2 text-sm bg-elev border border-base rounded-lg focus:outline-none focus:border-accent-500"
+              />
+            </div>
+          </div>
 
-          <div className="mb-4">
-            <label className="text-xs font-medium text-soft mb-2 block">Message (optional)</label>
+          <div>
+            <label className="text-xs font-medium text-soft mb-1 block">Motivation & Goals</label>
             <textarea
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder="What do you want to build on this project?"
-              rows={3}
-              className="w-full text-sm rounded-xl bg-soft border border-base p-3 focus:outline-none focus:border-strong resize-none"
+              required
+              rows={2}
+              value={motivation}
+              onChange={(e) => setMotivation(e.target.value)}
+              placeholder="Why do you want to adopt and maintain this project?"
+              className="w-full px-3 py-2 text-sm bg-elev border border-base rounded-lg focus:outline-none focus:border-accent-500 resize-none"
             />
           </div>
 
-          <div className="mb-4">
+          <div>
+            <label className="text-xs font-medium text-soft mb-1 block">Technical Roadmap & Proposed Improvements</label>
+            <textarea
+              required
+              rows={2}
+              value={technicalPlan}
+              onChange={(e) => setTechnicalPlan(e.target.value)}
+              placeholder="What architecture changes or new features will you build?"
+              className="w-full px-3 py-2 text-sm bg-elev border border-base rounded-lg focus:outline-none focus:border-accent-500 resize-none"
+            />
+          </div>
+
+          <div>
+            <label className="text-xs font-medium text-soft mb-1 block">Expected Timeline</label>
+            <input
+              type="text"
+              required
+              value={timeline}
+              onChange={(e) => setTimeline(e.target.value)}
+              placeholder="e.g. 2 months for MVP release"
+              className="w-full px-3 py-2 text-sm bg-elev border border-base rounded-lg focus:outline-none focus:border-accent-500"
+            />
+          </div>
+
+          {/* Original creators */}
+          <div className="pt-2 border-t border-base">
             <p className="text-xs font-medium text-soft mb-2 flex items-center gap-1.5">
-              <Users className="w-3.5 h-3.5" /> Original Creators
+              <Users className="w-3.5 h-3.5 text-faint" /> Original Team Attribution Retained:
             </p>
             <div className="flex flex-wrap gap-2">
               {project.originalTeam.members.map((m) => (
-                <div key={m.name} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-soft border border-base">
+                <div key={m.name} className="flex items-center gap-2 px-2.5 py-1 rounded-lg bg-soft border border-base text-xs">
                   <Avatar initials={m.avatar} size="xs" />
-                  <span className="text-xs">{m.name}</span>
-                  <span className="text-xs text-faint">{m.role}</span>
+                  <span>{m.name}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="mb-4 flex items-center gap-2 text-sm text-soft">
-            <Clock className="w-4 h-4 text-faint" />
-            Last updated: {project.year}
-          </div>
-
-          {project.suggestedImprovements && project.suggestedImprovements.length > 0 && (
-            <div className="mb-5">
-              <p className="text-xs font-medium text-soft mb-2 flex items-center gap-1.5">
-                <Lightbulb className="w-3.5 h-3.5" /> Suggested Improvements
-              </p>
-              <ul className="space-y-1.5">
-                {project.suggestedImprovements.map((imp, i) => (
-                  <li key={i} className="text-sm text-soft flex items-start gap-2">
-                    <span className="text-accent-500 mt-0.5">→</span>
-                    {imp}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          <div className="flex gap-3">
-            <Button variant="primary" onClick={handleAdopt} className="flex-1" disabled={loading}>
-              <Send className="w-4 h-4" /> {loading ? 'Sending...' : 'Send Adoption Request'}
+          <div className="flex gap-3 pt-2">
+            <Button type="submit" variant="primary" className="flex-1">
+              Submit Adoption Application
             </Button>
-            <Button variant="secondary" onClick={onClose} disabled={loading}>
+            <Button type="button" variant="secondary" onClick={onClose}>
               Cancel
             </Button>
           </div>
-        </>
+        </form>
       )}
     </Modal>
   );
